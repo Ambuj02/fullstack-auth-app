@@ -1,0 +1,12 @@
+CREATE DATABASE AuthAppDb;
+GO
+USE AuthAppDb;
+
+CREATE TABLE Users (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Email NVARCHAR(255) NOT NULL UNIQUE,
+    PasswordHash VARBINARY(MAX) NOT NULL,
+    PasswordSalt VARBINARY(MAX) NOT NULL
+);
+
+select *  from Users
