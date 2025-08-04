@@ -27,6 +27,21 @@ export class SigninComponent {
       next: res => {
         this.message = res.message;
         this.success = true;
+        this.http.get(`${environment.apiBaseUrl}/auth/secure-info`, {
+          headers: {
+            Authorization: `Bearer ${res.token}`
+          },
+          responseType: 'text'
+        }).subscribe(
+          (data) => {
+            this.message = data;
+            this.success = true;
+          },
+          (err) => {
+            this.message = 'Access denied';
+            this.success = false;
+          }
+        );
       },
       error: err => {
         this.message = err.error?.message || 'Login failed';

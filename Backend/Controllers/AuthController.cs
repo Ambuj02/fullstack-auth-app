@@ -1,5 +1,6 @@
 using Backend.DTOs;
 using Backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
@@ -15,32 +16,38 @@ namespace Backend.Controllers
             _authService = authService;
         }
 
-         [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-    {
-        try
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var token = await _authService.Login(loginDto);
-            return Ok(new { token, message = "Login successful" });
+            try
+            {
+                var token = await _authService.Login(loginDto);
+                return Ok(new { token, message = "Login successful" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { token = string.Empty, message = ex.Message });
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(400, new { token = string.Empty, message = ex.Message });
-        }
-    }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserDto userDto)
-    {
-        try
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
-            var token = await _authService.Register(userDto);
-            return Ok(new { token, message = "Registration successful" });
+            try
+            {
+                var token = await _authService.Register(userDto);
+                return Ok(new { token, message = "Registration successful" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { token = string.Empty, message = ex.Message });
+            }
         }
-        catch (Exception ex)
+        [HttpGet("secure-info")]
+        [Authorize]
+        public IActionResult GetSecureInfo()
         {
-            return StatusCode(400, new { token = string.Empty, message = ex.Message });
+            return Ok("Login successful: Secure data accessed!");
         }
-    }
     }
 }
