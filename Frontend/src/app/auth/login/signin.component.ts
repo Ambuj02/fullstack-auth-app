@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-signin',
@@ -17,18 +16,15 @@ export class SigninComponent {
   message = '';
   success = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.http.post<{ token: string, message: string }>(`${environment.apiBaseUrl}/auth/login`, {
-      email: this.email,
-      password: this.password
-    }).subscribe({
+    this.authService.login(this.email, this.password).subscribe({
       next: res => {
         this.message = res.message;
         this.success = true;
-        localStorage.setItem('authToken', res.token);
-        this.router.navigate(['/dashboard']);  
+        this.authService.setToken(res.token);
+        this.router.navigate(['/dashboard']);
       },
       error: err => {
         this.message = err.error?.message || 'Login failed';
