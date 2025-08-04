@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -17,7 +17,7 @@ export class SigninComponent {
   message = '';
   success = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
     this.http.post<{ token: string, message: string }>(`${environment.apiBaseUrl}/auth/login`, {
@@ -27,21 +27,8 @@ export class SigninComponent {
       next: res => {
         this.message = res.message;
         this.success = true;
-        this.http.get(`${environment.apiBaseUrl}/auth/secure-info`, {
-          headers: {
-            Authorization: `Bearer ${res.token}`
-          },
-          responseType: 'text'
-        }).subscribe(
-          (data) => {
-            this.message = data;
-            this.success = true;
-          },
-          (err) => {
-            this.message = 'Access denied';
-            this.success = false;
-          }
-        );
+        localStorage.setItem('authToken', res.token);
+        this.router.navigate(['/dashboard']);  
       },
       error: err => {
         this.message = err.error?.message || 'Login failed';

@@ -1,10 +1,11 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'https://localhost:5001/api/auth';
+  private baseUrl = `${environment.apiBaseUrl}/auth`;
   private token = signal<string | null>(sessionStorage.getItem('token'));
 
   constructor(private http: HttpClient, private router: Router) {}
